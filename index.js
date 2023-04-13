@@ -20,6 +20,51 @@ function runQuery() {
   // add a role
   // add an employee
   // update an employee role
+  initPrompts();
 }
 
 runQuery();
+
+function initPrompts() {
+  prompt([
+    {
+      type: '',
+      name: '',
+      message: '',
+      choices: [
+        {
+          name: '',
+          value: ''
+        },
+        {
+          name: '',
+          value: ''
+        },
+        {
+          name: '',
+          value: ''
+        },
+        {
+          name: '',
+          value: ''
+        },
+        {
+          name: '',
+          value: ''
+        },
+        {
+          name: '',
+          value: ''
+        },
+        {
+          name: '',
+          value: ''
+        },
+        {
+          name: '',
+          value: ''
+        }
+      ]
+    }
+  ])
+}
