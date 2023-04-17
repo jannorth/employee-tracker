@@ -187,75 +187,53 @@ function addRole() {
 }
 
 // add an employee
-async function addEmployee() {
-  const { firstName, lastName, roleId, managerId } = await prompt([
-    {
-      type: "input",
-      name: "firstName",
-      message: "Enter the employee's first name:",
-      validate: (input) => {
-        if (input.trim() === "") {
-          return "First name cannot be empty";
-        }
-        return true;
-      },
-    },
-    {
-      type: "input",
-      name: "lastName",
-      message: "Enter the employee's last name:",
-      validate: (input) => {
-        if (input.trim() === "") {
-          return "Last name cannot be empty";
-        }
-        return true;
-      },
-    },
-    {
-      type: "input",
-      name: "roleId",
-      message: "Enter the role ID for the new employee:",
-      validate: (input) => {
-        const valid = !isNaN(parseFloat(input));
-        if (valid) {
-          return true;
-        } else {
-          return "Please enter a valid role ID number";
-        }
-      },
-    },
-    {
-      type: "input",
-      name: "managerId",
-      message: "Enter the manager ID for the new employee (optional):",
-      validate: (input) => {
-        const valid = input.trim() === "" || !isNaN(parseFloat(input));
-        if (valid) {
-          return true;
-        } else {
-          return "Please enter a valid manager ID number, or leave blank for no manager";
-        }
-      },
-    },
-  ]);
-
-  db.query(
-    "INSERT INTO employee SET ?",
-    {
-      first_name: firstName,
-      last_name: lastName,
-      role_id: roleId,
-      manager_id: managerId || null,
-    },
-    function (err, res) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log(`${res.affectedRows} employee added!\n`);
-        initPrompts();
-      }
+function addEmployee() {
+  db.query("SELECT * FROM role", function(err, data) {
+    if (err) {
+      console.log(err);
+      return;
     }
-  );
+
+    const roleChoices = data.map((role) => {
+      return { name: role.title, value: role.id };
+    });
+
+    prompt([
+      {
+        type: "input",
+        name: "firstName",
+        message: "Enter the employee's first name:",
+      },
+      {
+        type: "input",
+        name: "lastName",
+        message: "Enter the employee's last name:",
+      },
+      {
+        type: "list",
+        name: "roleId",
+        message: "Select the employee's role:",
+        choices: roleChoices,
+      },
+    ]).then(function ({ firstName, lastName, roleId }) {
+      db.query(
+        "INSERT INTO employee SET ?",
+        {
+          first_name: firstName,
+          last_name: lastName,
+          role_id: roleId,
+        },
+        function (err, res) {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(`${res.affectedRows} employee added!\n`);
+            initPrompts();
+          }
+        }
+      );
+    });
+  });
 }
 // update an employee role
 async function updateEmployee() {
