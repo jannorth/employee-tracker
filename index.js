@@ -112,8 +112,8 @@ function viewEmployees() {
 }
 
 // add a department
- function addDepartment() {
-   prompt([
+function addDepartment() {
+  prompt([
     {
       type: "input",
       name: "departmentName",
@@ -188,7 +188,7 @@ function addRole() {
 
 // add an employee
 function addEmployee() {
-  db.query("SELECT * FROM role", function(err, data) {
+  db.query("SELECT * FROM role", function (err, data) {
     if (err) {
       console.log(err);
       return;
@@ -236,37 +236,66 @@ function addEmployee() {
   });
 }
 // update an employee role
-async function updateEmployee() {
-  const { employeeId, roleId } = await prompt([
-    {
-      type: "input",
-      name: "employeeId",
-      message: "Enter the ID of the employee to update:",
-    },
-    {
-      type: "input",
-      name: "roleId",
-      message: "Enter the new role ID for the employee:",
-    },
-  ]);
+function updateEmployee() {
+  db.query("SELECT * FROM employee", function (err, data) {
+    if (err) {
+      console.log(err);
+      return;
+    }
 
-  db.query(
-    "UPDATE employee SET role_id = ? WHERE id = ?",
-    [roleId, employeeId],
-    function (err, res) {
+    const employeeChoice = data.map(employee => ({
+      name: `${employee.first_name} ${employee.last_name}`,
+      value: employee.id
+    }));
+
+    db.query("SELECT * FROM role", function (err, roleData) {
       if (err) {
         console.log(err);
-      } else if (res.affectedRows === 0) {
-        console.log("Employee not found.");
-      } else {
-        console.log(`${res.affectedRows} employee updated!\n`);
-              initPrompts();
+        return;
       }
-    }
-  );
+
+      const roleChoices = roleData.map(role => ({
+        name: role.name,
+        value: role.id
+      }));
+
+      prompt([
+        {
+          type: "list",
+          name: "employeeId",
+          message: "Enter the ID of the employee to update:",
+          choices: employeeChoice
+        },
+        {
+          type: "list",
+          name: "roleId",
+          message: "Enter the ID of the new role:",
+          choices: roleChoices
+        }
+      ]).then(answers => {
+        const employeeId = answers.employeeId;
+        const roleId = answers.roleId;
+
+        db.query(
+          "UPDATE employee SET role_id = ? WHERE id = ?",
+          [roleId, employeeId],
+          function (err, res) {
+            if (err) {
+              console.log(err);
+            } else if (res.affectedRows === 0) {
+              console.log("Employee not found.");
+            } else {
+              console.log(`${res.affectedRows} employee updated!\n`);
+              initPrompts();
+            }
+          }
+        );
+      });
+    });
+  });
 }
 
 function init() {
-   initPrompts();
+  initPrompts();
 }
 init();
