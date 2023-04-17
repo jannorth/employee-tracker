@@ -137,35 +137,52 @@ function viewEmployees() {
 
 // add a role
 function addRole() {
-  prompt([
-    {
-      type: "input",
-      name: "roleName",
-      message: "Enter the name of the new role:",
-    },
-    {
-      type: "input",
-      name: "roleSalary",
-      message: "Enter the salary for the new role:",
-    },
-    {
-      type: "input",
-      name: "departmentId",
-      message: "Enter the department ID for the new role:",
-    },
-  ]).then((data) => {
-    db.query(
-      "INSERT INTO role SET ?",
-      { title: data.roleName, salary: data.roleSalary, department_id: data.departmentId },
-      function (err, res) {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(`${res.affectedRows} role added!\n`);
-          initPrompts();
-        }
-      }
-    );
+  db.query("SELECT * FROM department", function (err, data) {
+    if (err) {
+      console.log(err);
+      initPrompts();
+    } else {
+      const departmentChoices = data.map((department) => ({
+        name: department.name,
+        value: department.id,
+      }));
+
+      prompt([
+        {
+          type: "input",
+          name: "roleName",
+          message: "Enter the name of the new role:",
+        },
+        {
+          type: "input",
+          name: "roleSalary",
+          message: "Enter the salary for the new role:",
+        },
+        {
+          type: "list",
+          name: "departmentId",
+          message: "select a department for this role:",
+          choices: departmentChoices,
+        },
+      ]).then((data) => {
+        db.query(
+          "INSERT INTO role SET ?",
+          {
+            title: data.roleName,
+            salary: data.roleSalary,
+            department_id: data.departmentId,
+          },
+          function (err, res) {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(`${res.affectedRows} role added!\n`);
+            }
+            initPrompts();
+          }
+        );
+      });
+    }
   });
 }
 
