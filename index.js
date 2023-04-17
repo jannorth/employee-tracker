@@ -255,7 +255,7 @@ function updateEmployee() {
       }
 
       const roleChoices = roleData.map(role => ({
-        name: role.name,
+        name: role.title,
         value: role.id
       }));
 
