@@ -36,14 +36,18 @@ THEN I am prompted to select an employee to update and their new role and this i
 
 ## Installation
 
-What are the steps required to install your project? Provide a step-by-step description of how to get the development environment running.
+Open a new terminal from the root folder.
+
+Run npm install --save mysql2; npm i inquirer@8.2.4; console.table
+
+Run npm start
+
+Answer prompts
 
 ## Usage
 
-Provide instructions and examples for use. Include screenshots as needed.
+https://drive.google.com/file/d/1czrjkgfzN_arpYJlZ0qxkpHdomOLk2fz/view
 
-To add a screenshot, create an `assets/images` folder in your repository and upload your screenshot to it. Then, using the relative filepath, add it to your README using the following syntax:
 
-    ```md
-    ![alt text](assets/images/screenshot.png)
-    ```
+[walkthrough video](assets/walkthrough/employee-tracker.webm)
+
